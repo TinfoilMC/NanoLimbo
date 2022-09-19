@@ -17,20 +17,20 @@
 
 package ru.nanit.limbo.configuration;
 
+import com.google.common.reflect.TypeToken;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.TypeSerializer;
 
-import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 public class SocketAddressSerializer implements TypeSerializer<SocketAddress> {
 
     @Override
-    public SocketAddress deserialize(Type type, ConfigurationNode node) {
-        String ip = node.node("ip").getString();
-        int port = node.node("port").getInt();
+    public SocketAddress deserialize(TypeToken<?> type, ConfigurationNode node) {
+        String ip = node.getNode("ip").getString();
+        int port = node.getNode("port").getInt();
         SocketAddress address;
 
         if (ip == null || ip.isEmpty()) {
@@ -43,7 +43,7 @@ public class SocketAddressSerializer implements TypeSerializer<SocketAddress> {
     }
 
     @Override
-    public void serialize(Type type, @Nullable SocketAddress obj, ConfigurationNode node) {
+    public void serialize(TypeToken type, @Nullable SocketAddress obj, ConfigurationNode node) {
 
     }
 }

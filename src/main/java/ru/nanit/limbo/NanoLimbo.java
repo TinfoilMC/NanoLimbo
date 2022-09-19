@@ -17,10 +17,30 @@
 
 package ru.nanit.limbo;
 
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.plugin.Plugin;
 import ru.nanit.limbo.server.LimboServer;
 import ru.nanit.limbo.server.Logger;
 
-public final class NanoLimbo {
+@Plugin(id = "nanolimbo", authors = {"TinfoilMC", "Nan1t"})
+public class NanoLimbo {
+    LimboServer limboServer = new LimboServer();
+
+    @Subscribe
+    public void onStart(ProxyInitializeEvent e) {
+        try {
+            limboServer.start();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Subscribe
+    public void onStop(ProxyShutdownEvent e) {
+        limboServer.stop();
+    }
 
     public static void main(String[] args) {
         try {

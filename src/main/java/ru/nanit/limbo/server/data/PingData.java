@@ -17,12 +17,11 @@
 
 package ru.nanit.limbo.server.data;
 
+import com.google.common.reflect.TypeToken;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.TypeSerializer;
 import ru.nanit.limbo.util.Colors;
-
-import java.lang.reflect.Type;
 
 public class PingData {
 
@@ -48,15 +47,15 @@ public class PingData {
     public static class Serializer implements TypeSerializer<PingData> {
 
         @Override
-        public PingData deserialize(Type type, ConfigurationNode node) {
+        public PingData deserialize(TypeToken<?> type, ConfigurationNode node) {
             PingData pingData = new PingData();
-            pingData.setDescription(Colors.of(node.node("description").getString("")));
-            pingData.setVersion(Colors.of(node.node("version").getString("")));
+            pingData.setDescription(Colors.of(node.getNode("description").getString("")));
+            pingData.setVersion(Colors.of(node.getNode("version").getString("")));
             return pingData;
         }
 
         @Override
-        public void serialize(Type type, @Nullable PingData obj, ConfigurationNode node) {
+        public void serialize(TypeToken<?> type, @Nullable PingData obj, ConfigurationNode node) {
 
         }
     }

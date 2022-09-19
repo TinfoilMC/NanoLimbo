@@ -17,10 +17,11 @@
 
 package ru.nanit.limbo.configuration;
 
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.ConfigurationOptions;
-import org.spongepowered.configurate.serialize.TypeSerializerCollection;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import com.google.common.reflect.TypeToken;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializerCollection;
+import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import ru.nanit.limbo.server.data.*;
 import ru.nanit.limbo.util.Colors;
 import ru.nanit.limbo.world.Location;
@@ -75,58 +76,58 @@ public final class LimboConfig {
     }
 
     public void load() throws Exception {
-        ConfigurationOptions options = ConfigurationOptions.defaults().serializers(getSerializers());
-        YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
-                .source(this::getReader)
-                .defaultOptions(options)
+        ConfigurationOptions options = ConfigurationOptions.defaults().withSerializers(getSerializers());
+        YAMLConfigurationLoader loader = YAMLConfigurationLoader.builder()
+                .setSource(this::getReader)
+                .setDefaultOptions(options)
                 .build();
 
         ConfigurationNode conf = loader.load();
 
-        address = conf.node("bind").get(SocketAddress.class);
-        maxPlayers = conf.node("maxPlayers").getInt();
-        pingData = conf.node("ping").get(PingData.class);
-        dimensionType = conf.node("dimension").getString();
+        address = conf.getNode("bind").getValue(TypeToken.of(SocketAddress.class));
+        maxPlayers = conf.getNode("maxPlayers").getInt();
+        pingData = conf.getNode("ping").getValue(TypeToken.of(PingData.class));
+        dimensionType = conf.getNode("dimension").getString();
         if (dimensionType.equalsIgnoreCase("nether")) {
             dimensionType = "the_nether";
         }
         if (dimensionType.equalsIgnoreCase("end")) {
             dimensionType = "the_end";
         }
-        spawnPosition = conf.node("spawnPosition").get(Location.class);
-        gameMode = conf.node("gameMode").getInt();
-        useBrandName = conf.node("brandName", "enable").getBoolean();
-        useJoinMessage = conf.node("joinMessage", "enable").getBoolean();
-        useBossBar = conf.node("bossBar", "enable").getBoolean();
-        useTitle = conf.node("title", "enable").getBoolean();
-        usePlayerList = conf.node("playerList", "enable").getBoolean();
-        playerListUsername = conf.node("playerList", "username").getString();
-        useHeaderAndFooter = conf.node("headerAndFooter", "enable").getBoolean();
+        spawnPosition = conf.getNode("spawnPosition").getValue(TypeToken.of(Location.class));
+        gameMode = conf.getNode("gameMode").getInt();
+        useBrandName = conf.getNode("brandName", "enable").getBoolean();
+        useJoinMessage = conf.getNode("joinMessage", "enable").getBoolean();
+        useBossBar = conf.getNode("bossBar", "enable").getBoolean();
+        useTitle = conf.getNode("title", "enable").getBoolean();
+        usePlayerList = conf.getNode("playerList", "enable").getBoolean();
+        playerListUsername = conf.getNode("playerList", "username").getString();
+        useHeaderAndFooter = conf.getNode("headerAndFooter", "enable").getBoolean();
 
         if (useBrandName)
-            brandName = conf.node("brandName", "content").getString();
+            brandName = conf.getNode("brandName", "content").getString();
 
         if (useJoinMessage)
-            joinMessage = Colors.of(conf.node("joinMessage", "text").getString(""));
+            joinMessage = Colors.of(conf.getNode("joinMessage", "text").getString(""));
 
         if (useBossBar)
-            bossBar = conf.node("bossBar").get(BossBar.class);
+            bossBar = conf.getNode("bossBar").getValue(TypeToken.of(BossBar.class));
 
         if (useTitle)
-            title = conf.node("title").get(Title.class);
+            title = conf.getNode("title").getValue(TypeToken.of(Title.class));
 
         if (useHeaderAndFooter) {
-            playerListHeader = Colors.of(conf.node("headerAndFooter", "header").getString());
-            playerListFooter = Colors.of(conf.node("headerAndFooter", "footer").getString());
+            playerListHeader = Colors.of(conf.getNode("headerAndFooter", "header").getString());
+            playerListFooter = Colors.of(conf.getNode("headerAndFooter", "footer").getString());
         }
 
-        infoForwarding = conf.node("infoForwarding").get(InfoForwarding.class);
-        readTimeout = conf.node("readTimeout").getLong();
-        debugLevel = conf.node("debugLevel").getInt();
+        infoForwarding = conf.getNode("infoForwarding").getValue(TypeToken.of(InfoForwarding.class));
+        readTimeout = conf.getNode("readTimeout").getLong();
+        debugLevel = conf.getNode("debugLevel").getInt();
 
-        useEpoll = conf.node("netty", "useEpoll").getBoolean(true);
-        bossGroupSize = conf.node("netty", "threads", "bossGroup").getInt(1);
-        workerGroupSize = conf.node("netty", "threads", "workerGroup").getInt(4);
+        useEpoll = conf.getNode("netty", "useEpoll").getBoolean(true);
+        bossGroupSize = conf.getNode("netty", "threads", "bossGroup").getInt(1);
+        workerGroupSize = conf.getNode("netty", "threads", "workerGroup").getInt(4);
     }
 
     private BufferedReader getReader() throws IOException {
@@ -146,14 +147,13 @@ public final class LimboConfig {
     }
 
     private TypeSerializerCollection getSerializers() {
-        return TypeSerializerCollection.builder()
-                .register(SocketAddress.class, new SocketAddressSerializer())
-                .register(InfoForwarding.class, new InfoForwarding.Serializer())
-                .register(PingData.class, new PingData.Serializer())
-                .register(BossBar.class, new BossBar.Serializer())
-                .register(Title.class, new Title.Serializer())
-                .register(Location.class, new Location.Serializer())
-                .build();
+        return TypeSerializerCollection.create()
+                .register(TypeToken.of(SocketAddress.class), new SocketAddressSerializer())
+                .register(TypeToken.of(InfoForwarding.class), new InfoForwarding.Serializer())
+                .register(TypeToken.of(PingData.class), new PingData.Serializer())
+                .register(TypeToken.of(BossBar.class), new BossBar.Serializer())
+                .register(TypeToken.of(Title.class), new Title.Serializer())
+                .register(TypeToken.of(Location.class), new Location.Serializer());
     }
 
     public SocketAddress getAddress() {

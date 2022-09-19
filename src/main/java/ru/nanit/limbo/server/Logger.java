@@ -17,6 +17,8 @@
 
 package ru.nanit.limbo.server;
 
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
@@ -24,6 +26,7 @@ public final class Logger {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("hh:mm:ss");
     private static int debugLevel = Level.INFO.getIndex();
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger("NanoLimbo");
 
     private Logger() {}
 
@@ -31,34 +34,44 @@ public final class Logger {
         return debugLevel;
     }
 
-    public static void info(Object msg, Object... args) {
+    public static void info(String msg, Object... args) {
         print(Level.INFO, msg, null, args);
     }
 
-    public static void debug(Object msg, Object... args) {
+    public static void debug(String msg, Object... args) {
         print(Level.DEBUG, msg, null, args);
     }
 
-    public static void warning(Object msg, Object... args) {
+    public static void warning(String msg, Object... args) {
         print(Level.WARNING, msg, null, args);
     }
 
-    public static void warning(Object msg, Throwable t, Object... args) {
+    public static void warning(String msg, Throwable t, Object... args) {
         print(Level.WARNING, msg, t, args);
     }
 
-    public static void error(Object msg, Object... args) {
+    public static void error(String msg, Object... args) {
         print(Level.ERROR, msg, null, args);
     }
 
-    public static void error(Object msg, Throwable t, Object... args) {
+    public static void error(String msg, Throwable t, Object... args) {
         print(Level.ERROR, msg, t, args);
     }
 
-    public static void print(Level level, Object msg, Throwable t, Object... args) {
-        if (debugLevel >= level.getIndex()) {
-            System.out.printf("%s: %s%n", getPrefix(level), String.format(msg.toString(), args));
-            if (t != null) t.printStackTrace();
+    public static void print(Level level, String msg, Throwable t, Object... args) {
+        switch (level) {
+            case DEBUG:
+                logger.debug(String.format(msg, args), t);
+                break;
+            case INFO:
+                logger.info(String.format(msg, args), t);
+                break;
+            case ERROR:
+                logger.error(String.format(msg, args), t);
+                break;
+            case WARNING:
+                logger.info(String.format(msg, args), t);
+                break;
         }
     }
 

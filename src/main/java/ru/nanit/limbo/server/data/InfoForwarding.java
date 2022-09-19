@@ -17,10 +17,12 @@
 
 package ru.nanit.limbo.server.data;
 
+import com.google.common.reflect.TypeToken;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.SerializationException;
-import org.spongepowered.configurate.serialize.TypeSerializer;
+import org.yaml.snakeyaml.serializer.SerializerException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -73,28 +75,28 @@ public class InfoForwarding {
     public static class Serializer implements TypeSerializer<InfoForwarding> {
 
         @Override
-        public InfoForwarding deserialize(java.lang.reflect.Type type, ConfigurationNode node) throws SerializationException {
+        public InfoForwarding deserialize(TypeToken<?> type, ConfigurationNode node) throws SerializerException, ObjectMappingException {
             InfoForwarding forwarding = new InfoForwarding();
 
             try {
-                forwarding.type = Type.valueOf(node.node("type").getString("").toUpperCase());
+                forwarding.type = Type.valueOf(node.getNode("type").getString("").toUpperCase());
             } catch (IllegalArgumentException e) {
-                throw new SerializationException("Undefined info forwarding type");
+                throw new SerializerException("Undefined info forwarding type");
             }
 
             if (forwarding.type == Type.MODERN) {
-                forwarding.secretKey = node.node("secret").getString("").getBytes(StandardCharsets.UTF_8);
+                forwarding.secretKey = node.getNode("secret").getString("").getBytes(StandardCharsets.UTF_8);
             }
 
             if (forwarding.type == Type.BUNGEE_GUARD) {
-                forwarding.tokens = node.node("tokens").getList(String.class);
+                forwarding.tokens = node.getNode("tokens").getList(TypeToken.of(String.class));
             }
 
             return forwarding;
         }
 
         @Override
-        public void serialize(java.lang.reflect.Type type, @Nullable InfoForwarding obj, ConfigurationNode node) throws SerializationException {
+        public void serialize(TypeToken<?> type, @Nullable InfoForwarding obj, ConfigurationNode node) throws SerializerException {
 
         }
     }

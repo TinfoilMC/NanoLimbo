@@ -17,10 +17,10 @@
 
 package ru.nanit.limbo.connection;
 
-import com.grack.nanojson.JsonArray;
-import com.grack.nanojson.JsonObject;
-import com.grack.nanojson.JsonParser;
-import com.grack.nanojson.JsonParserException;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -231,8 +231,8 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         JsonArray arr;
 
         try {
-            arr = JsonParser.array().from(split[3]);
-        } catch (JsonParserException e) {
+            arr = JsonParser.parseString(split[3]).getAsJsonArray();
+        } catch (JsonParseException e) {
             return false;
         }
 
@@ -241,8 +241,8 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         for (Object obj : arr) {
             if (obj instanceof JsonObject) {
                 JsonObject prop = (JsonObject) obj;
-                if (prop.getString("name").equals("bungeeguard-token")) {
-                    token = prop.getString("value");
+                if (prop.get("name").getAsString().equals("bungeeguard-token")) {
+                    token = prop.get("value").getAsString();
                     break;
                 }
             }

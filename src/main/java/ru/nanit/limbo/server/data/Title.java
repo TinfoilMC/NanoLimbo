@@ -17,12 +17,11 @@
 
 package ru.nanit.limbo.server.data;
 
+import com.google.common.reflect.TypeToken;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.TypeSerializer;
 import ru.nanit.limbo.util.Colors;
-
-import java.lang.reflect.Type;
 
 public class Title {
 
@@ -75,18 +74,18 @@ public class Title {
     public static class Serializer implements TypeSerializer<Title> {
 
         @Override
-        public Title deserialize(Type type, ConfigurationNode node) {
+        public Title deserialize(TypeToken<?> type, ConfigurationNode node) {
             Title title = new Title();
-            title.setTitle(Colors.of(node.node("title").getString("")));
-            title.setSubtitle(Colors.of(node.node("subtitle").getString("")));
-            title.setFadeIn(node.node("fadeIn").getInt(10));
-            title.setStay(node.node("stay").getInt(100));
-            title.setFadeOut(node.node("fadeOut").getInt(10));
+            title.setTitle(Colors.of(node.getNode("title").getString("")));
+            title.setSubtitle(Colors.of(node.getNode("subtitle").getString("")));
+            title.setFadeIn(node.getNode("fadeIn").getInt(10));
+            title.setStay(node.getNode("stay").getInt(100));
+            title.setFadeOut(node.getNode("fadeOut").getInt(10));
             return title;
         }
 
         @Override
-        public void serialize(Type type, @Nullable Title obj, ConfigurationNode node) {
+        public void serialize(TypeToken<?> type, @Nullable Title obj, ConfigurationNode node) {
             // Not used
         }
     }

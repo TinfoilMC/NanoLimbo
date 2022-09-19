@@ -17,13 +17,12 @@
 
 package ru.nanit.limbo.server.data;
 
+import com.google.common.reflect.TypeToken;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.SerializationException;
-import org.spongepowered.configurate.serialize.TypeSerializer;
+import org.yaml.snakeyaml.serializer.SerializerException;
 import ru.nanit.limbo.util.Colors;
-
-import java.lang.reflect.Type;
 
 public class BossBar {
 
@@ -107,32 +106,32 @@ public class BossBar {
     public static class Serializer implements TypeSerializer<BossBar> {
 
         @Override
-        public BossBar deserialize(Type type, ConfigurationNode node) throws SerializationException {
+        public BossBar deserialize(TypeToken<?> type, ConfigurationNode node) throws SerializerException {
             BossBar bossBar = new BossBar();
 
-            bossBar.setText(Colors.of(node.node("text").getString("")));
-            bossBar.setHealth(node.node("health").getFloat());
+            bossBar.setText(Colors.of(node.getNode("text").getString("")));
+            bossBar.setHealth(node.getNode("health").getFloat());
 
             if (bossBar.getHealth() < 0 || bossBar.getHealth() > 1)
-                throw new SerializationException("BossBar health value must be between 0.0 and 1.0");
+                throw new SerializerException("BossBar health value must be between 0.0 and 1.0");
 
             try {
-                bossBar.setColor(Color.valueOf(node.node("color").getString("").toUpperCase()));
+                bossBar.setColor(Color.valueOf(node.getNode("color").getString("").toUpperCase()));
             } catch (IllegalArgumentException e) {
-                throw new SerializationException("Invalid bossbar color");
+                throw new SerializerException("Invalid bossbar color");
             }
 
             try {
-                bossBar.setDivision(Division.valueOf(node.node("division").getString("").toUpperCase()));
+                bossBar.setDivision(Division.valueOf(node.getNode("division").getString("").toUpperCase()));
             } catch (IllegalArgumentException e) {
-                throw new SerializationException("Invalid bossbar division");
+                throw new SerializerException("Invalid bossbar division");
             }
 
             return bossBar;
         }
 
         @Override
-        public void serialize(Type type, @Nullable BossBar obj, ConfigurationNode node) {
+        public void serialize(TypeToken<?> type, @Nullable BossBar obj, ConfigurationNode node) {
 
         }
     }

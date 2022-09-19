@@ -25,6 +25,7 @@ public final class CommandManager extends Thread {
 
     @Override
     public void run() {
+        if (true) return;
         Scanner scanner = new Scanner(System.in);
         String command;
 

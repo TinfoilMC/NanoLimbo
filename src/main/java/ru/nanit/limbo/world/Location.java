@@ -17,11 +17,10 @@
 
 package ru.nanit.limbo.world;
 
+import com.google.common.reflect.TypeToken;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializer;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.TypeSerializer;
-
-import java.lang.reflect.Type;
 
 public class Location {
 
@@ -90,17 +89,17 @@ public class Location {
     public static class Serializer implements TypeSerializer<Location> {
 
         @Override
-        public Location deserialize(Type type, ConfigurationNode node) {
-            double x = node.node("x").getDouble(0);
-            double y = node.node("y").getDouble(0);
-            double z = node.node("z").getDouble(0);
-            float yaw = node.node("yaw").getFloat(0.0F);
-            float pitch = node.node("pitch").getFloat(0.0F);
+        public Location deserialize(TypeToken<?> type, ConfigurationNode node) {
+            double x = node.getNode("x").getDouble(0);
+            double y = node.getNode("y").getDouble(0);
+            double z = node.getNode("z").getDouble(0);
+            float yaw = node.getNode("yaw").getFloat(0.0F);
+            float pitch = node.getNode("pitch").getFloat(0.0F);
 
             return new Location(x, y, z, yaw, pitch);
         }
 
         @Override
-        public void serialize(Type type, @Nullable Location obj, ConfigurationNode node) { }
+        public void serialize(TypeToken type, @Nullable Location obj, ConfigurationNode node) { }
     }
 }

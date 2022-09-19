@@ -24,9 +24,9 @@ import io.netty.channel.ServerChannel;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.local.LocalAddress;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.util.ResourceLeakDetector;
 import ru.nanit.limbo.configuration.LimboConfig;
 import ru.nanit.limbo.connection.ClientChannelInitializer;
 import ru.nanit.limbo.connection.ClientConnection;
@@ -38,7 +38,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public final class LimboServer {
+public class LimboServer {
 
     private LimboConfig config;
     private PacketHandler packetHandler;
@@ -74,7 +74,7 @@ public final class LimboServer {
     public void start() throws Exception {
         Logger.info("Starting server...");
 
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
+        //ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
 
         config = new LimboConfig(Paths.get("./"));
         config.load();
@@ -90,7 +90,7 @@ public final class LimboServer {
 
         keepAliveTask = workerGroup.scheduleAtFixedRate(this::broadcastKeepAlive, 0L, 5L, TimeUnit.SECONDS);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(this::stop, "NanoLimbo shutdown thread"));
+        //Runtime.getRuntime().addShutdownHook(new Thread(this::stop, "NanoLimbo shutdown thread"));
 
         Logger.info("Server started on %s", config.getAddress());
 
@@ -100,7 +100,7 @@ public final class LimboServer {
         commandManager.registerAll(this);
         commandManager.start();
 
-        System.gc();
+        //System.gc();
     }
 
     private void startBootstrap() {
@@ -131,7 +131,7 @@ public final class LimboServer {
         connections.getAllConnections().forEach(ClientConnection::sendKeepAlive);
     }
 
-    private void stop() {
+    public void stop() {
         Logger.info("Stopping server...");
 
         if (keepAliveTask != null) {
